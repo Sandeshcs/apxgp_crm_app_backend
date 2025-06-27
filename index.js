@@ -19,6 +19,7 @@ app.listen(3000, () => {
 
 //import and setup cors.
 const cors = require("cors");
+const { default: mongoose } = require("mongoose");
 const corsOrigin = {
     origin: "*",
     credential: true
@@ -196,27 +197,95 @@ app.post("/leads", async (req, res) => {
 
 //api to get all leads.
 const getAllLeads = async (filter = {}, sortByOptions = {}) => {
-    try{
-        //console.log(filter, sortByOptions);
-        let filteredData = LeadModel.find(filter);
+    // try{
+    //     //console.log(filter, sortByOptions);
+    //     let filteredData = LeadModel.find(filter);
 
-        if(sortByOptions.field){
-            filteredData = filteredData.sort({[sortByOptions.field]: sortByOptions.order});
+    //     if(sortByOptions.field){
+    //         filteredData = filteredData.sort({[sortByOptions.field]: sortByOptions.order});
+    //     }
+
+    //     filteredData = filteredData.populate("salesAgent");
+
+    //     const allLeadsFound = await filteredData.exec();
+
+    //     //const allLeadsFound = await LeadModel.find().populate("salesAgent");
+    //     //console.log(allLeadsFound);
+    //     return allLeadsFound;
+    // }
+
+    // aggregation pipeline when u have strings and u want to sort using this u can give number to string based on that it will sort.
+    try {
+        let aggregationPipeline = [];
+
+        // Add initial filter if any
+        if (Object.keys(filter).length > 0) {
+            aggregationPipeline.push({ $match: filter });
         }
 
-        filteredData = filteredData.populate("salesAgent");
+        if (sortByOptions.field === "priority") {
+            // Add a temporary field for numerical priority
+            aggregationPipeline.push({
+                $addFields: {
+                    priorityValue: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$priority", "High"] }, then: 3 },
+                                { case: { $eq: ["$priority", "Medium"] }, then: 2 },
+                                { case: { $eq: ["$priority", "Low"] }, then: 1 }
+                            ],
+                            default: 0 // Default for any other priority value
+                        }
+                    }
+                }
+            });
+            // Sort by the numerical priority
+            aggregationPipeline.push({
+                $sort: { "priorityValue": sortByOptions.order }
+            });
+        } else if (sortByOptions.field) {
+            // For other fields, direct sort
+            aggregationPipeline.push({
+                $sort: { [sortByOptions.field]: sortByOptions.order }
+            });
+        }
 
-        const allLeadsFound = await filteredData.exec();
+        // Project to remove the temporary priorityValue field if desired, and reshape the output
+        // You might need to adjust this projection based on the exact fields you want in your final output.
+        // For now, let's keep everything and just remove the temporary field.
+        aggregationPipeline.push({
+            $project: {
+                priorityValue: 0 // Exclude the temporary field from the final output
+                // Add back any other fields you explicitly want if you start picking specific fields
+            }
+        });
 
-        //const allLeadsFound = await LeadModel.find().populate("salesAgent");
-        //console.log(allLeadsFound);
+        aggregationPipeline.push({
+            $lookup: {
+                from: 'salesagents', // replace with your actual sales agent collection name
+                localField: 'salesAgent',
+                foreignField: '_id',
+                as: 'salesAgent'
+            }
+        });
+        aggregationPipeline.push({
+            $unwind: {
+                path: '$salesAgent',
+                preserveNullAndEmptyArrays: true // Keep leads even if no sales agent is found
+            }
+        });
+
+        const allLeadsFound = await LeadModel.aggregate(aggregationPipeline).exec();
+        //console.log(allLeadsFound)
         return allLeadsFound;
     }
+
     catch (error) {
         console.log("error occured while getting all leads, ",error);
         throw error;
     }
-}
+};
+
 app.get("/leads", async (req, res) => {
     try{
         const {status, salesAgent, priority, sortby, order} = req.query;
@@ -231,7 +300,7 @@ app.get("/leads", async (req, res) => {
         
         //filter for sales agent.
         if(salesAgent){
-            filter.salesAgent = salesAgent;
+            filter.salesAgent = new mongoose.Types.ObjectId(salesAgent);
         }
 
         //filter for priority.

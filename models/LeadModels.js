@@ -33,6 +33,8 @@ const leadSchema = new mongoose.Schema({
   priority: {
     type: String,
     required: true,
+    // enum: [1, 2, 3],  // Predefined priority levels
+    // default: 2,
     enum: ['High', 'Medium', 'Low'],  // Predefined priority levels
     default: 'Low',
   },
