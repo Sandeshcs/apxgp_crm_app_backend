@@ -34,7 +34,7 @@ const leadSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['High', 'Medium', 'Low'],  // Predefined priority levels
-    default: 'Medium',
+    default: 'Low',
   },
   createdAt: {
     type: Date,
