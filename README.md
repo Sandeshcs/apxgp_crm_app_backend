@@ -29,8 +29,8 @@ node index.js
 ---
 
 ## App Demo Video
-Watch a walkthrough ( ) of all the major features of this app:
-[App Demo Video]()
+Watch a walkthrough ( 7minutes ) of all the major features of this app:
+[App Demo Video](https://drive.google.com/file/d/11ta2d6NaX4qyR0Zc6aOV9u4ruexTqY6u/view?usp=sharing)
 
 ---
 
@@ -59,7 +59,7 @@ Sample Resopnse:
 [{_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt closedAt}, ...]
 ```
 
-### POST /api/leads
+#### POST /api/leads
 Post lead data when we click submit button in add new lead form.
 - Status 201 created for creating new lead.
 - Status 400 for bad request, validation error, sales agent id invalid.
@@ -70,7 +70,7 @@ Sample Resopnse:
 {_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt, closedAt}
 ```
 
-### POST(update) /api/leads/:leadId
+#### POST(update) /api/leads/:leadId
 Update lead data when we click submit in edit/update lead button in individual lead management and comment section.
 - Status 200 ok for updating a lead.
 - Status 404 not found if the requested lead is not present to update.
@@ -93,7 +93,7 @@ Sample Resopnse:
 [{_id, name, email}, ...]
 ```
 
-### POST /api/sales-agent
+#### POST /api/sales-agent
 Post new sales agent when we click submit in add new sales agent form.
 - Status 201 created for creating new sales agent.
 - Status 400 bad request, validation error, unique email.
@@ -121,7 +121,7 @@ Sample Response:
 
 ---
 
-## POST /api/comments
+#### POST /api/comments
 Post new comment when submit button clicked.
 - Status 201 created for creating new comment.
 - Status 400 for bad request.
