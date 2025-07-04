@@ -35,9 +35,10 @@ Watch a walkthrough ( ) of all the major features of this app:
 ---
 
 ## API Reference
-### GET /api/leads
+### Leads Api's
+#### GET /api/leads
 Display all leads.
-- Status 200 ok.
+- Status 200 ok for fetching all leads.
 - Status 404 not found if no leads are present.
 - Status 500 for internal server error.
 
@@ -45,9 +46,22 @@ Sample Resopnse:
 ```
 [{_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt, closedAt}, ...]
 ```
+
+#### GET /api/leads?filterOneName=filterOneValue&filterTwoName=filterTwoValue&filterThreeName=filterThreeValue&sortby=sortByName&order=des/asc
+Display all leads based on filter and sortby and order.
+If no filter, sortby, order selected then all leads are displayed.
+- Status 200 ok for fetching all leads or fetching only filter and sortby leads.
+- Status 404 not found if no leads are present for the requested filter, sortby, order.
+- Status 500 for internal server error.
+
+Sample Resopnse:
+```
+[{_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt closedAt}, ...]
+```
+
 ### POST /api/leads
 Post lead data when we click submit button in add new lead form.
-- Status 201 created.
+- Status 201 created for creating new lead.
 - Status 400 for bad request, validation error, sales agent id invalid.
 - Status 500 for internal server error.
 
@@ -58,7 +72,7 @@ Sample Resopnse:
 
 ### POST(update) /api/leads/:leadId
 Update lead data when we click submit in edit/update lead button in individual lead management and comment section.
-- Status 200 ok.
+- Status 200 ok for updating a lead.
 - Status 404 not found if the requested lead is not present to update.
 - Status 500 for internal server error.
 
@@ -67,9 +81,10 @@ Sample Resopnse:
 {_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt, closedAt}
 ```
 
-### GET /api/sales-agent
+### Sales agent Api's
+#### GET /api/sales-agent
 Display all sales agent.
-- Status 200 ok.
+- Status 200 ok for fetching all sales agents.
 - Status 404 not found if no sales agent are present.
 - Status 500 for internal server error.
 
@@ -80,7 +95,7 @@ Sample Resopnse:
 
 ### POST /api/sales-agent
 Post new sales agent when we click submit in add new sales agent form.
-- Status 201 created.
+- Status 201 created for creating new sales agent.
 - Status 400 bad request, validation error, unique email.
 - Status 500 for internal server error.
 
@@ -89,21 +104,10 @@ Sample Resopnse:
 {_id, name, email}
 ```
 
-### GET /api/leads?filterOneName=filterOneValue&filterTwoName=filterTwoValue&filterThreeName=filterThreeValue&sortby=sortByName&order=des/asc
-Display all leads based on filter and sortby and order.
-If no filter, sortby, order selected then all leads are displayed.
-- Status 200 ok.
-- Status 404 not found if no leads are present for the requested filter, sortby, order.
-- Status 500 for internal server error.
-
-Sample Resopnse:
-```
-[{_id, name, status, source, salesAgent, tags, timeToClose, priority, createdAt, updatedAt closedAt}, ...]
-```
-
-### GET /api/comments/
+### Comments Api's
+#### GET /api/comments/
 Fetch all comments then we filter and display comments of specific lead.
-- Status 200 ok.
+- Status 200 ok for fetching all comments.
 - Status 404 not found if no comments are present.
 - Status 500 for internal server error.
 
@@ -119,7 +123,7 @@ Sample Response:
 
 ## POST /api/comments
 Post new comment when submit button clicked.
-- Status 201 created.
+- Status 201 created for creating new comment.
 - Status 400 for bad request.
 - Status 500 for internal server error.
 
